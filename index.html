@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music-Player</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/279666062e.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="music-player">
+            <nav>
+                <div class="circle">
+                    <i class="fas fa-angle-left" onclick="playPreviousSong()"></i> <!-- Added onclick event for previous song -->
+                </div>
+                <div class="circle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+            <img src="media/hm.jpg" class="song-img" id="songImg"> <!-- Placeholder image -->
+            <h2 id="songTitle">Him&I</h2> <!-- Placeholder title -->
+            <p id="songArtist">Halsey</p> <!-- Placeholder artist -->
+
+            <audio id="song">
+                <source src="media/[MP3DOWNLOAD.TO] G-Eazy & Halsey - Him & I (Lyrics)-320k.mp3" type="audio/mpeg">
+            </audio>
+
+            <input type="range" value="0" id="progress">
+
+            <div class="controls">
+                <div><i class="fas fa-backward" onclick="playPreviousSong()"></i></div> <!-- Added onclick event for previous song -->
+                <div onclick="playpause()">
+                    <i class="fas fa-play" id="ctrlIcon"></i>
+                </div>
+                <div><i class="fas fa-forward" onclick="playNextSong()"></i></div> <!-- Added onclick event for next song -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let progress = document.getElementById("progress");
+        let ctrlIcon = document.getElementById("ctrlIcon");
+        let songImg = document.getElementById("songImg");
+        let songTitle = document.getElementById("songTitle");
+        let songArtist = document.getElementById("songArtist");
+
+        // Array of song details
+        let songs = [
+            { image: "media/hm.jpg", title: "Him&I", artist: "Halsey", src: "media/[MP3DOWNLOAD.TO] G-Eazy & Halsey - Him & I (Lyrics)-320k.mp3", color: "#808080", bgColor: "#1a1a1a" },
+            { image: "media/1000.jpg", title: "A Thousand Years", artist: "Christina Perri", src: "media/Bella ❣️ Edward- A Thousand Years 🎼- Christina Perri🎶- PRATIKSHIT.mp4", color: "#87cefa", bgColor: "linear-gradient(to bottom, #87cefa, #ffffff)" },
+            { image: "media/sw.jpg", title: "BlackSwan", artist: "BTS", src: "media/Black Swan Bts.mp3", color: "#808080", bgColor: "#1a1a1a" },
+            { image: "media/bls.jpg", title: "BlankSpace", artist: "Taylor Swift", src: "media/Blank Space - Taylor Swift ! English Song.mp3", color: "#000000", bgColor: "#ffffff" }
+            // Add more songs here as objects with image, title, artist, src, color, and bgColor properties
+        ];
+
+        let currentSongIndex = 0; // Index of the currently playing song
+
+        function playpause(){
+            let song = document.getElementById("song");
+
+            if(ctrlIcon.classList.contains("fa-pause")){
+                song.pause();
+                ctrlIcon.classList.remove("fa-pause");
+                ctrlIcon.classList.add("fa-play");
+            }
+            else{
+                song.play();
+                ctrlIcon.classList.add("fa-pause");
+                ctrlIcon.classList.remove("fa-play");
+            }
+        }
+
+        function playNextSong() {
+            currentSongIndex++;
+            if (currentSongIndex >= songs.length) {
+                currentSongIndex = 0; // Loop back to the first song
+            }
+            updateSongDetails();
+        }
+
+        function playPreviousSong() {
+            currentSongIndex--;
+            if (currentSongIndex < 0) {
+                currentSongIndex = songs.length - 1; // Loop to the last song
+            }
+            updateSongDetails();
+        }
+
+        function updateSongDetails() {
+            songImg.src = songs[currentSongIndex].image;
+            songTitle.textContent = songs[currentSongIndex].title;
+            songArtist.textContent = songs[currentSongIndex].artist;
+            let song = document.getElementById("song");
+            song.src = songs[currentSongIndex].src;
+
+            // Reset audio progress and play/pause icon
+            progress.value = 0;
+            ctrlIcon.classList.remove("fa-pause");
+            ctrlIcon.classList.add("fa-play");
+
+            // Automatically play the song if it was playing before
+            if (!song.paused) {
+                song.play();
+                ctrlIcon.classList.add("fa-pause");
+                ctrlIcon.classList.remove("fa-play");
+            }
+
+            // Update styling based on current song
+            document.documentElement.style.setProperty('--song-color', songs[currentSongIndex].color);
+            document.documentElement.style.setProperty('--song-bgColor', songs[currentSongIndex].bgColor);
+        }
+
+        // Initialize with the first song details
+        updateSongDetails();
+
+        song.onloadedmetadata = function(){
+            progress.max = song.duration;
+        }
+
+        setInterval(() => {
+            progress.value = song.currentTime;
+        }, 500);
+
+        progress.oninput = function(){
+            song.currentTime = progress.value;
+        }
+    </script>
+</body>
+</html>
